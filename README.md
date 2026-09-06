@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Roster Roller
 
-## Getting Started
+Legendary team names for your rec league squad. Pick a sport and a vibe, roll,
+and get eight names ranging from groan-worthy puns to genuinely intimidating.
 
-First, run the development server:
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the dev server on port 3000 |
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | Lint with ESLint |
 
-## Learn More
+## How it works
 
-To learn more about Next.js, take a look at the following resources:
+The UI (`src/app/page.tsx`) is a single client component: sport and vibe
+selectors on the left, results on the right. Rolling POSTs to
+`/api/generate`, which calls `generateNames()` from `src/lib/names.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Each sport has a curated bank of `punny`, `fierce`, and `funny` names, plus
+`prefixes` and `nouns` that get combined into "Blazing Vipers"-style names.
+The `random` vibe mixes two from each category with two generated combos.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### API
 
-## Deploy on Vercel
+```http
+POST /api/generate
+Content-Type: application/json
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+{ "sport": "soccer", "vibe": "random" }
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```json
+{ "names": ["Pitch Please", "Iron Cleats", "..."] }
+```
+
+Both fields are optional and default to `soccer` / `random`.
+
+- `sport`: `soccer` | `netball`
+- `vibe`: `punny` | `fierce` | `funny` | `random`
+
+## Adding a sport
+
+1. Add the name to the `Sport` union in `src/lib/names.ts`.
+2. Add a `NameData` object with all five arrays (`prefixes`, `nouns`, `punny`,
+   `fierce`, `funny`) and register it in `namesBySport`.
+3. Add an entry to `SPORTS` in `src/app/page.tsx` with a label and icon.
+
+## Project structure
+
+```
+src/
+  app/
+    api/generate/route.ts  POST endpoint
+    globals.css            theme variables + keyframes
+    layout.tsx             fonts and metadata
+    page.tsx               the UI
+  lib/
+    names.ts               name banks and generator
+```
+
+## Stack
+
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4. Type is Anton,
+Barlow Condensed, and Geist Mono via `next/font/google`.
