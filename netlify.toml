@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Netlify installs this automatically for Next.js sites; pinning it here keeps
+# the runtime explicit and lets `netlify build` work locally.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
